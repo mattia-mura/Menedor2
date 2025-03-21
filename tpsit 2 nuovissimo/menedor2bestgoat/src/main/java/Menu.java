@@ -31,7 +31,7 @@ public class Menu {
                 menuRiskLevel();
             }
             String intero = tastiera.nextLine();
-            intero.trim();
+            intero = intero.trim();
             try {
 
                 scelta = (int) Integer.parseInt(intero);
@@ -41,7 +41,7 @@ public class Menu {
                 System.out.println("Non e' stato inserito un intero!");
                 ok=false;
             }
-            if (scelta<0 || scelta>this.n) {ok=false;}
+            if ( !(scelta>=0 && scelta<=this.n) ) {ok=false;}
         }while(!ok);
         return scelta;
     }

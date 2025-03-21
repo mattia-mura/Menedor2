@@ -9,8 +9,11 @@ import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalDate;
 
 public class MainFrame extends JFrame {
+
+    LocalDate date = LocalDate.now();
 
     private JPanel panel;
     private GridBagConstraints gbc;
@@ -26,12 +29,16 @@ public class MainFrame extends JFrame {
     private JButton salvaEEsci;
     private String[] datiUtenti;
 
+    private Portafoglio soldiSolidi = new Portafoglio(0);
+    private ContoBanca soldiVirtuali = new ContoBanca(0);
+
+
     public MainFrame(String[] datiUtenti) {
-        this.datiUtenti=datiUtenti;
+        this.datiUtenti = datiUtenti;
 
         //size del frame
         setTitle("Menu");
-        setSize(800, 600);
+        setSize(900, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(true);
@@ -39,7 +46,7 @@ public class MainFrame extends JFrame {
         //creo pannello
         panel = new JPanel();
         panel.setLayout(new GridBagLayout());
-        panel.setBackground(new Color(215,215,215));
+        panel.setBackground(new Color(215, 215, 215));
 
         //creo dei limiti che posso modificare
         gbc = new GridBagConstraints();
@@ -50,15 +57,15 @@ public class MainFrame extends JFrame {
         gbc.weighty = 1.0;
 
         //elementi prima pagina
-        portafoglio = new JLabel("Soldi solidi:");
-        banca = new JLabel("Soldi virtuali:");
-        data = new JLabel("Mesi:");
+        portafoglio = new JLabel("Soldi solidi: " + soldiSolidi.getSchei());
+        banca = new JLabel("Soldi virtuali: " + soldiVirtuali.getSaldo());
+        data = new JLabel("Data: " + date);
 
         JLabel[] labels = {portafoglio, banca, data};
 
         for (JLabel label : labels) {
             label.setForeground(Color.black);
-            label.setFont(new Font("Sans Serif", Font.PLAIN, 20));
+            label.setFont(new Font("Sans Serif", Font.PLAIN, 10));
         }
 
         deposita = new JButton("DEPOSITA");
@@ -73,7 +80,7 @@ public class MainFrame extends JFrame {
 
         for (JButton jButton : bottoni) {
             jButton.setFont(new Font("Sans Serif", Font.PLAIN, 15));
-            jButton.setBackground(new Color(219,219,219));
+            jButton.setBackground(new Color(219, 219, 219));
             jButton.setForeground(Color.black);
             jButton.setFocusPainted(false);
             jButton.setBorderPainted(true);
@@ -82,17 +89,17 @@ public class MainFrame extends JFrame {
 
             jButton.addMouseListener(new MouseAdapter() {
                 public void mouseEntered(MouseEvent e) {
-                    jButton.setBackground(new Color(194,194,194));
+                    jButton.setBackground(new Color(194, 194, 194));
                 }
 
                 public void mouseExited(MouseEvent e) {
-                    jButton.setBackground(new Color(219,219,219));
+                    jButton.setBackground(new Color(219, 219, 219));
                 }
             });
         }
 
         salvaEEsci.setFont(new Font("Sans Serif", Font.PLAIN, 15));
-        salvaEEsci.setBackground(new Color(184,184,184));
+        salvaEEsci.setBackground(new Color(184, 184, 184));
         salvaEEsci.setForeground(Color.black);
         salvaEEsci.setFocusPainted(false);
         salvaEEsci.setBorderPainted(true);
@@ -100,55 +107,69 @@ public class MainFrame extends JFrame {
         salvaEEsci.setPreferredSize(new Dimension(100, 25));
         salvaEEsci.addMouseListener(new MouseAdapter() {
             public void mouseEntered(MouseEvent e) {
-                salvaEEsci.setBackground(new Color(177,177,177));
+                salvaEEsci.setBackground(new Color(177, 177, 177));
             }
 
             public void mouseExited(MouseEvent e) {
-                salvaEEsci.setBackground(new Color(184,184,184));
+                salvaEEsci.setBackground(new Color(184, 184, 184));
             }
         });
 
-        deposita.addActionListener(e -> deposita(new Portafoglio(0),new ContoBanca(0)));
+        deposita.addActionListener(e -> deposita());
         prelieva.addActionListener(e -> prelieva());
-        investi.addActionListener(e -> nuovoInvestimento() );
+        investi.addActionListener(e -> nuovoInvestimento());
         transizioni.addActionListener(e -> transizioni());
         avanzaMese.addActionListener(e -> avanzaMese());
         tris.addActionListener(e -> tris());
         salvaEEsci.addActionListener(e -> salvaEEsci());
 
 
+        ImageIcon logoIcon = new ImageIcon("Logo_MenedorBank.PNG");
+        JLabel logoLabel = new JLabel(logoIcon);
+
+// Posizionamento del logo
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 3;  // Occupa tre colonne
+        panel.add(logoLabel, gbc);
 
+// Reset gridwidth dopo l'uso
+        gbc.gridwidth = 1;
+
+// Posizionamento delle etichette
+        gbc.gridy = 1;
+        gbc.gridx = 0;
         panel.add(portafoglio, gbc);
         gbc.gridx = 1;
         panel.add(banca, gbc);
         gbc.gridx = 2;
         panel.add(data, gbc);
 
-        gbc.gridy = 1;
+// Posizionamento dei bottoni
+        gbc.gridy = 2;
         gbc.gridx = 0;
-
         panel.add(deposita, gbc);
         gbc.gridx = 1;
         panel.add(prelieva, gbc);
         gbc.gridx = 2;
         panel.add(investi, gbc);
 
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         gbc.gridx = 0;
-
         panel.add(transizioni, gbc);
         gbc.gridx = 1;
         panel.add(tris, gbc);
         gbc.gridx = 2;
         panel.add(avanzaMese, gbc);
 
-        gbc.gridy = 3;
+// Posizionamento del bottone "Salva ed Esci"
+        gbc.gridy = 4;
         gbc.gridx = 0;
-        gbc.gridwidth = 3;
-
+        gbc.gridwidth = 3;  // Il bottone occupa tre colonne
         panel.add(salvaEEsci, gbc);
+
+// Reset gridwidth dopo l'uso
+        gbc.gridwidth = 1;
 
 
         add(panel);
@@ -156,35 +177,73 @@ public class MainFrame extends JFrame {
 
     }
 
-    public void deposita(Portafoglio portafoglio, ContoBanca contoBanca) {
-        String deposita = JOptionPane.showInputDialog(this, "Deposita:", "0");
-        double importo = 0.0;
-        try {
-            importo = Double.parseDouble(deposita);
-        }catch (NumberFormatException e){
-            JOptionPane.showMessageDialog(this, "scrivi un numero dio bell.", "Errore", JOptionPane.ERROR_MESSAGE);
-        }
-        Main.depositPreleva(1,importo, portafoglio, contoBanca);
+    private void mostraMessaggio(String messaggio, boolean successo) {
+        JOptionPane.showMessageDialog(this, messaggio, successo ? "Successo" : "Errore",
+                successo ? JOptionPane.INFORMATION_MESSAGE : JOptionPane.ERROR_MESSAGE);
+    }
 
+    private void gestisciTransazione(int tipo) {
+        String input = JOptionPane.showInputDialog(this, tipo == 1 ? "Deposita:" : "Prelieva:", "0");
+        try {
+            double importo = Double.parseDouble(input);
+            boolean esito = Main.depositPreleva(tipo, importo, soldiSolidi, soldiVirtuali);
+            mostraMessaggio(esito ? "Operazione completata" : "Operazione fallita", esito);
+        } catch (NumberFormatException e) {
+            mostraMessaggio("Inserisci un numero valido.", false);
+        }
+    }
+
+    public void deposita() {
+        gestisciTransazione(1);
+
+        portafoglio.setText("Soldi solidi: " + soldiSolidi.getSchei());
+        banca.setText("Soldi virtuali: " + soldiVirtuali.getSaldo());
+        data.setText("Data: " + date);
+
+        panel.revalidate();
+        panel.repaint();
     }
 
     public void prelieva() {
+        gestisciTransazione(2);
 
+        portafoglio.setText("Soldi solidi: " + soldiSolidi.getSchei());
+        banca.setText("Soldi virtuali: " + soldiVirtuali.getSaldo());
+        data.setText("Data: " + date);
+
+        panel.revalidate();
+        panel.repaint();
     }
 
     public void nuovoInvestimento() {
 
         InvestiFrame investmentiFrame = new InvestiFrame();
 
+        portafoglio.setText("Soldi solidi: " + soldiSolidi.getSchei());
+        banca.setText("Soldi virtuali: " + soldiVirtuali.getSaldo());
+        data.setText("Data: " + date);
+
+        panel.revalidate();
+        panel.repaint();
+
     }
 
 
     public void transizioni() {
 
+
     }
 
     public void avanzaMese() {
+        soldiSolidi.aumentaSchei(100);
+        date = date.plusMonths(1); // Aggiorna la data
 
+        portafoglio.setText("Soldi solidi: " + soldiSolidi.getSchei());
+        banca.setText("Soldi virtuali: " + soldiVirtuali.getSaldo());
+        data.setText("Data: " + date);
+
+        panel.revalidate();
+        panel.repaint();
     }
 
     public void tris() {

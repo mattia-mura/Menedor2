@@ -5,6 +5,7 @@ import main.java.Portafoglio;
 
 import java.io.*;
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public class AccessoUtenteMain {
 
@@ -19,18 +20,32 @@ public class AccessoUtenteMain {
         public static boolean addUtent(String nomeUtente,String password) { // controlla password e nomeUtente --> solo caratteri e numeri , no spazi
             File Utente = new File(name+nomeUtente+".txt");
             File Utente2 = new File(name+nomeUtente+".csv");
+            BufferedWriter BW = null;
             if (Utente.exists() || Utente2.exists() ) { return false;}
-            try ( BufferedWriter BW = new BufferedWriter (new FileWriter( Utente,true ) ) ){
+            try {
+                BW = new BufferedWriter (new FileWriter( Utente,true ) );
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
                 Utente.createNewFile();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
                 BW.write(password);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
-            try ( BufferedWriter bw = new BufferedWriter (new FileWriter( Utente2,true ) ) ){
+            try {
                 Utente2.createNewFile();
-                bw.write(password);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+            try {
+                BW.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
             return true;
         }
@@ -51,8 +66,9 @@ public class AccessoUtenteMain {
 
         public boolean addInfo (String nomeUtente, Portafoglio portafoglio, ContoBanca contoBanca, LocalDate localDate) {
             File Utente = new File(name+nomeUtente+".txt");
+            BufferedWriter BW = null;
             if ( Utente.exists() ) {
-                BufferedWriter BW;
+
 
                 try {
                     BW = new BufferedWriter(new FileWriter(nomeUtente + ".csv", true));
@@ -65,10 +81,41 @@ public class AccessoUtenteMain {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
+                try {
+                    BW.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 return true;
+            }
+            try {
+                BW.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
             return false;
         }//addInfo
+
+        public double getLastSomething(String nomeUtente, int pos){
+            File f = new File (name+nomeUtente+".csv");
+            if (!f.exists()){return -1;}
+            Scanner scanner;
+            try {
+                scanner = new Scanner (new FileReader(f) );
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+            double x = 0.0;
+            while(scanner.hasNextLine()){
+                String riga = scanner.nextLine();
+                if (!scanner.hasNextLine()){
+                    String dati[]= riga.split(";");
+                    x = Double.valueOf(dati[pos]);
+                }
+            }
+            scanner.close();
+            return x;
+        }
 
 }//class
 

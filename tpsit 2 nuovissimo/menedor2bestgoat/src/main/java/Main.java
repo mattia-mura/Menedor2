@@ -3,20 +3,22 @@ package main.java;
 import main.java.accesso.AccessoUtenteMain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        ContoBanca contoBancario = new ContoBanca(0);
-        Portafoglio portafoglio = new Portafoglio(0);
+        ContoBanca contoBancario = null;
+        Portafoglio portafoglio = null;
+        LocalDate data = null;
         Menu menu1 = new Menu(1);
         Menu menu2 = new Menu(2);
         Menu menu3 = new Menu(3);
 
         Scanner tastiera = new Scanner(System.in);
-        LocalDate data = LocalDate.now();
+
 //        int mesi = 1;
 //        int anno = 2025;
         int scelta = -1;
@@ -45,53 +47,68 @@ public class Main {
 
             System.out.println("- - - Benvenuti alla nostra banca - - -");
 
-            if (!accesso){
-                System.out.println();
-                System.out.println("1-accedi");
-                System.out.println("2-registrati");
-                System.out.println("0-esci");
-                int sceltaUtente = Tools.getIntero();
-                while(sceltaUtente<0 || sceltaUtente>2) {
-                    System.out.println("- - - Benvenuti alla nostra banca - - -");
-                    System.out.println();
-                    System.out.println("1-accedi");
-                    System.out.println("2-registrati");
-                    System.out.println("0-esci");
-                }
-                boolean enter = true;
-                do {
-                    if ( sceltaUtente == 1) {
-                        System.out.print("Inserisci il nome utente : ");
-                        nomeUtente = tastiera.nextLine(); // controlla nome
-                        System.out.println();
-                        System.out.print("Inserisci la password : ");
-                        password = tastiera.nextLine(); //controlla password
-                        System.out.println();
-                        if (acs.findUtent(nomeUtente,password)) {
-                            System.out.println("Accesso eseguito !");accesso = true;
-                        }else{System.out.println("Accesso non eseguito !");enter = false;}
-                    }//login
-                    if ( sceltaUtente == 2) {
-                        System.out.print("Inserisci il nome utente : ");
-                        nomeUtente = tastiera.nextLine();
-                        System.out.println();
-                        System.out.print("Inserisci la password : ");
-                        password = tastiera.nextLine();
-                        System.out.println();
-                        if (acs.addUtent(nomeUtente,password)) {
-                            System.out.println("Utente creato con successo !");accesso = true;
-                        }else{System.out.println("Utente non creato !");enter = false;}
-                    }
-                    if(sceltaUtente == 0) {scelta=0;}
-                }while( !enter || scelta == 0 || !accesso);
 
-            }
-            if (scelta != 0) {
-                System.out.println("Non hai soldi nel tuo portafoglio.");
-                System.out.println("Desideri visualizzare lo stato del tuo account? o venire il mese successivo?");
-                System.out.println("Inserisci cosa vuoi fare?");
-                scelta = menu1.scelta();
-            }
+
+                    if (!accesso) {
+                        do {
+                        System.out.println();
+                        System.out.println("1-accedi");
+                        System.out.println("2-registrati");
+                        System.out.println("0-esci");
+                        int sceltaUtente = Tools.getIntero();
+                        while (sceltaUtente < 0 || sceltaUtente > 2) {
+                            System.out.println("- - - Benvenuti alla nostra banca - - -");
+                            System.out.println();
+                            System.out.println("1-accedi");
+                            System.out.println("2-registrati");
+                            System.out.println("0-esci");
+                        }
+                        if (sceltaUtente == 1) {
+                            System.out.print("Inserisci il nome utente : ");
+                            nomeUtente = tastiera.nextLine(); // controlla nome
+                            System.out.println();
+                            System.out.print("Inserisci la password : ");
+                            password = tastiera.nextLine(); //controlla password
+                            System.out.println();
+                            if (acs.findUtent(nomeUtente, password)) {
+                                System.out.println("Accesso eseguito !");
+                                accesso = true;
+                                int anno = (int) acs.getLastSomething(nomeUtente,4);
+                                int mese = (int) acs.getLastSomething(nomeUtente,3);
+                                int giorno = (int) acs.getLastSomething(nomeUtente,2);
+                                data = LocalDate.of(anno,mese,giorno);
+                            } else {
+                                System.out.println("Accesso non eseguito !");
+                            }
+                        }//login
+                        if (sceltaUtente == 2) {
+                            System.out.print("Inserisci il nome utente : ");
+                            nomeUtente = tastiera.nextLine();
+                            System.out.println();
+                            System.out.print("Inserisci la password : ");
+                            password = tastiera.nextLine();
+                            System.out.println();
+                            if (acs.addUtent(nomeUtente, password)) {
+                                System.out.println("Utente creato con successo !");
+                                accesso = true;
+                                contoBancario = new ContoBanca(acs.getLastSomething(nomeUtente,1));
+                                portafoglio = new Portafoglio(acs.getLastSomething(nomeUtente,0));
+                                contoBancario = new ContoBanca(0);
+                                portafoglio = new Portafoglio(0);
+                                data = LocalDate.now();
+                                acs.addInfo(nomeUtente,portafoglio,contoBancario,data);
+                            } else {
+                                System.out.println("Utente non creato !");
+                            }
+                        }
+                        if (sceltaUtente == 0) {
+                            scelta = 0;
+                        }
+                    }
+                    while (scelta == 0 || !accesso) ;
+                }
+            System.out.println("Inserisci cosa vuoi fare?");
+            scelta = menu1.scelta();
 
 
             switch (scelta) {
@@ -232,7 +249,7 @@ public class Main {
                             capitale = investimento(capitale, probabilitaGuadagno, percentualeMinMaxGuadagno,percentualeMinMaxPerdita);
 
 
-                            if (Investimenti[nInvestimenti] == -777777) Investimenti[nInvestimenti] = capitale;
+                            if (Investimenti[nInvestimenti] <= -777777) Investimenti[nInvestimenti] = capitale;
                             nInvestimenti++;
                             }
 
@@ -270,6 +287,7 @@ public class Main {
 //                        anno++;
 //                    }
 //                    mesi++;
+
                     data.plusMonths(1);
 
                     for (int i=0;i<nInvestimenti;i++){
@@ -322,6 +340,11 @@ public class Main {
                     break;
                 }
             }
+            /*case 0:{
+
+                System.out.println();
+                break;
+            }*/
         } while (scelta != '0');
         tastiera.close();
     }
@@ -329,11 +352,11 @@ public class Main {
 
     public static boolean depositPreleva (int scelta, double money, Portafoglio portafoglio, ContoBanca contoBancario) {
         if (scelta == 1) {
-            if (money > portafoglio.getSchei()) {return false;}
+            if ( (money > portafoglio.getSchei() ) || (money<=0) ){return false;}
             portafoglio.decrementaSchei(money);
             contoBancario.aumentaSaldo(money);
         }else {
-            if (money > contoBancario.getSaldo()) {return false;}
+            if ( (money > portafoglio.getSchei() ) || (money<=0) ){return false;}
             portafoglio.aumentaSchei(money);
             contoBancario.decrementaSaldo(money);
 
@@ -374,7 +397,7 @@ public class Main {
 
     public static void scalaInvestimenti (double Investimenti[],int nMaxInvestimenti){
         for (int i=0;i<nMaxInvestimenti;i++){
-            if (Investimenti[i] == -777777){
+            if (Investimenti[i] <= -777777){
                 for (int j=i;j<nMaxInvestimenti-1;j++){
                     Investimenti[i]=Investimenti[i+1];
                 }
