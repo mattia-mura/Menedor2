@@ -29,7 +29,7 @@ public class AccessoFrame extends JFrame {
     private JButton indietrimento;
     private AccessoUtenteMain aU = new AccessoUtenteMain();
 
-    private String[] datiUtente = new String[2];
+    private static String[] datiUtente = new String[2];
 
     public AccessoFrame() {
 
@@ -51,10 +51,10 @@ public class AccessoFrame extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
 
         //elementi prima pagina
-        nomeUtente = new JLabel("Username:");
-        creaPass = new JLabel("Crea Password:");
-        riprovaPass = new JLabel("Reinserisci la Password:");
-        passUtente = new JLabel("Password:");
+        nomeUtente = new JLabel("Username");
+        creaPass = new JLabel("Crea Password");
+        riprovaPass = new JLabel("Reinserisci la Password");
+        passUtente = new JLabel("Password");
 
         JLabel[] labels = {nomeUtente,creaPass,riprovaPass,passUtente};
 
@@ -230,12 +230,12 @@ public class AccessoFrame extends JFrame {
             JOptionPane.showMessageDialog(null, "Le password non possono essere vuote", "Errore", JOptionPane.ERROR_MESSAGE);
         } else {
             if (password.equals(passwordRiprova)) {
-                    if(AccessoUtenteMain.addUtent(utente, password)){
-                        JOptionPane.showMessageDialog(null, "Registrazione effettuata!");
-                        dispose(); // Procedi con la registrazione
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Account già esistente", "Errore", JOptionPane.ERROR_MESSAGE);
-                    }
+                if(AccessoUtenteMain.addUtent(utente, password)){
+                    JOptionPane.showMessageDialog(null, "Registrazione effettuata!");
+                    dispose(); // Procedi con la registrazione
+                } else {
+                    JOptionPane.showMessageDialog(null, "Account già esistente", "Errore", JOptionPane.ERROR_MESSAGE);
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "Le password non coincidono", "Errore", JOptionPane.ERROR_MESSAGE);
             }
@@ -330,8 +330,8 @@ public class AccessoFrame extends JFrame {
         return (password == null || password.length == 0 || String.valueOf(password).equals(placeholder)) ? "" : new String(password);
     }
 
-    public String[] getDatiUtente() {
-            return datiUtente;
+    public static String[] getDatiUtente() {
+        return datiUtente;
     }
 
 }

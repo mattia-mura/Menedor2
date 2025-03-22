@@ -3,6 +3,7 @@ package main.java.accesso;
 import main.java.ContoBanca;
 import main.java.Portafoglio;
 
+import javax.swing.*;
 import java.io.*;
 import java.time.LocalDate;
 import java.util.Scanner;
@@ -64,7 +65,7 @@ public class AccessoUtenteMain {
             return false;
         }//accesso
 
-        public boolean addInfo (String nomeUtente, Portafoglio portafoglio, ContoBanca contoBanca, LocalDate localDate) {
+        public static boolean addInfo (String nomeUtente, Portafoglio portafoglio, ContoBanca contoBanca, LocalDate localDate) {
             File Utente = new File(name+nomeUtente+".txt");
             BufferedWriter BW = null;
             if ( Utente.exists() ) {
@@ -96,7 +97,8 @@ public class AccessoUtenteMain {
             return false;
         }//addInfo
 
-        public double getLastSomething(String nomeUtente, int pos){
+
+    public double getLastSomething(String nomeUtente, int pos){
             File f = new File (name+nomeUtente+".csv");
             if (!f.exists()){return -1;}
             Scanner scanner;

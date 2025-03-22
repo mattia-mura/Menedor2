@@ -1,8 +1,9 @@
 package main.java.menu;
 
 import main.java.ContoBanca;
-import main.java.Main;
 import main.java.Portafoglio;
+import main.java.accesso.AccessoFrame;
+import main.java.accesso.AccessoUtenteMain;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
@@ -31,7 +32,6 @@ public class MainFrame extends JFrame {
 
     private Portafoglio soldiSolidi = new Portafoglio(0);
     private ContoBanca soldiVirtuali = new ContoBanca(0);
-
 
     public MainFrame(String[] datiUtenti) {
         this.datiUtenti = datiUtenti;
@@ -186,7 +186,7 @@ public class MainFrame extends JFrame {
         String input = JOptionPane.showInputDialog(this, tipo == 1 ? "Deposita:" : "Prelieva:", "0");
         try {
             double importo = Double.parseDouble(input);
-            boolean esito = Main.depositPreleva(tipo, importo, soldiSolidi, soldiVirtuali);
+            boolean esito = depositPreleva(tipo, importo, soldiSolidi, soldiVirtuali);
             mostraMessaggio(esito ? "Operazione completata" : "Operazione fallita", esito);
         } catch (NumberFormatException e) {
             mostraMessaggio("Inserisci un numero valido.", false);
@@ -242,6 +242,11 @@ public class MainFrame extends JFrame {
         banca.setText("Soldi virtuali: " + soldiVirtuali.getSaldo());
         data.setText("Data: " + date);
 
+        for (int i=0;i<5;i++){
+            double array = InvestiFrame.trovaInvestimenti();
+            //stampa e fai investimenti
+        }
+
         panel.revalidate();
         panel.repaint();
     }
@@ -251,8 +256,45 @@ public class MainFrame extends JFrame {
     }
 
     public void salvaEEsci() {
+        if (AccessoUtenteMain.addInfo(AccessoFrame.getDatiUtente()[0]+".csv", soldiSolidi,soldiVirtuali,date)){
+            //dati salvati
+        }else{
+            //dati non salvati
+        }
         dispose();
     }
 
+    public double[] trovaInvestimenti (){
+        double ar[] = new double [nMaxInvestimenti];
+        int nInvestimentitrovati = 0;
+        for (int i=0;i<nMaxInvestimenti;i++){
+            tempInvestimento[i] --;
+            if (tempInvestimento[i] == 0){
+                ar[nInvestimentitrovati] = Investimenti [i];
+                nInvestimentitrovati++;
+                for (int j=i;j<nMaxInvestimenti-1;j++){
+                    Investimenti[i]=Investimenti[i+1];
+                }
+                Investimenti [i] = Double.parseDouble(null);
+            }
+        }
+        return ar;
+    }
+
+
+    public static boolean depositPreleva (int scelta, double money, Portafoglio portafoglio, ContoBanca contoBancario) {
+        if (scelta == 1) {
+            if ( (money > portafoglio.getSchei() ) || (money<=0) ){return false;}
+            portafoglio.decrementaSchei(money);
+            contoBancario.aumentaSaldo(money);
+        }else {
+            if ( (money > portafoglio.getSchei() ) || (money<=0) ){return false;}
+            portafoglio.aumentaSchei(money);
+            contoBancario.decrementaSaldo(money);
+
+        }
+        return true;
+
+    }
 
 }
